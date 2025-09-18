@@ -15,7 +15,7 @@ YELLOW='\033[0;33m'
 CYAN='\033[0;36m'
 
 # --- Script Configuration ---
-SMB_SHARE_PATH="//truenas.local/opti990/A6000"
+SMB_SHARE_PATH="//192.168.11.2/opti990/A6000"
 LOCAL_MOUNT_POINT="/mnt/photoprism_data"
 SMB_CREDENTIALS_FILE="/etc/photoprism/.smb_credentials"
 
