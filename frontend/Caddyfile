@@ -1,0 +1,10 @@
+:80 {
+    # Set this path to the public directory
+    root * /srv
+
+    # Enable the static file server
+    file_server
+
+    # Proxy API requests to the backend
+    reverse_proxy /api/* backend:3000
+}

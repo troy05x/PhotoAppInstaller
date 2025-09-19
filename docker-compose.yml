@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    environment:
+      - SMB_SERVER_IP=192.168.11.2
+      - SMB_SHARE_NAME=Opti990
+      - SMB_DIRECTORY_PATH=A6000
+      - SMB_USERNAME=troy05
+      - SMB_PASSWORD=password
+    volumes:
+      - thumbnail-cache:/app/cache
+    restart: unless-stopped
+
+volumes:
+  thumbnail-cache:
