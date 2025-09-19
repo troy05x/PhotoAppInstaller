@@ -14,8 +14,8 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-if ! command -v docker-compose &> /dev/null; then
-    echo "Error: 'docker-compose' is not installed. Please install Docker Compose and try again."
+if ! docker compose version &> /dev/null; then
+    echo "Error: 'docker compose' is not available. Please ensure Docker is installed correctly and includes the Compose plugin."
     exit 1
 fi
 echo "Dependencies found."
@@ -101,16 +101,16 @@ cat <<EOF > backend/package.json
   },
   "dependencies": {
     "express": "^4.18.2",
-    "smb2": "^1.3.0",
+    "smb2": "0.2.11",
     "sharp": "^0.33.1",
     "path": "^0.12.7"
   }
 }
 EOF
 
-cat <<EOF > backend/server.js
+cat <<'EOF' > backend/server.js
 const express = require('express');
-const { SMB2 } = require('smb2');
+const SMB2 = require('smb2');
 const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
@@ -125,7 +125,7 @@ if (!fs.existsSync(CACHE_DIR)) {
 
 // --- SMB Configuration ---
 const smbConfig = {
-    share: \`\\\\\\\\?\${process.env.SMB_SERVER_IP}\\\${process.env.SMB_SHARE_NAME}\`,
+    share: `\\\\${process.env.SMB_SERVER_IP}\\${process.env.SMB_SHARE_NAME}`,
     domain: 'WORKGROUP',
     username: process.env.SMB_USERNAME,
     password: process.env.SMB_PASSWORD,
@@ -159,7 +159,7 @@ async function findImages(directory) {
             }
         }
     } catch (err) {
-        console.error(\`Error reading directory \${smbPath} from SMB share:\`, err);
+        console.error(`Error reading directory ${smbPath} from SMB share:`, err);
     }
     return images;
 }
@@ -221,12 +221,12 @@ app.get('/api/thumbnail/:filename', async (req, res) => {
 
 // --- Server Startup ---
 app.listen(port, async () => {
-    console.log(\`Backend server listening on port \${port}\`);
+    console.log(`Backend server listening on port ${port}`);
     console.log('Connecting to SMB share and indexing images...');
     try {
         const baseDir = process.env.SMB_DIRECTORY_PATH || '/';
         imageIndex = await findImages(baseDir);
-        console.log(\`Found \${imageIndex.length} images.\`);
+        console.log(`Found ${imageIndex.length} images.`);
     } catch (err) {
         console.error("Failed to connect to SMB share or index images on startup.", err);
         // We will let the server run, it might recover or the user might fix config
@@ -358,7 +358,7 @@ h1 {
 }
 EOF
 
-cat <<EOF > frontend/app.js
+cat <<'EOF' > frontend/app.js
 document.addEventListener('DOMContentLoaded', () => {
     const galleryGrid = document.getElementById('gallery-grid');
     const lightbox = document.getElementById('lightbox');
@@ -390,8 +390,8 @@ document.addEventListener('DOMContentLoaded', () => {
             item.className = 'gallery-item';
             // Use a placeholder to maintain layout before image loads
             const img = document.createElement('img');
-            img.dataset.src = \`/api/thumbnail/\${encodeURIComponent(filename)}\`;
-            img.dataset.fullSrc = \`/api/image/\${encodeURIComponent(filename)}\`;
+            img.dataset.src = `/api/thumbnail/${encodeURIComponent(filename)}`;
+            img.dataset.fullSrc = `/api/image/${encodeURIComponent(filename)}`;
             img.alt = filename;
             item.appendChild(img);
             galleryGrid.appendChild(item);
@@ -479,15 +479,15 @@ echo "All files generated successfully."
 echo "--------------------------------------------------------------------"
 
 # --- 4. Final Steps ---
-echo "Running 'docker-compose up -d --build' to start the application..."
+echo "Running 'docker compose up -d --build' to start the application..."
 echo "This may take a few minutes, especially on the first run..."
 
-docker-compose up -d --build
+sudo docker compose up -d --build
 
 echo "--------------------------------------------------------------------"
 echo "Success! The PhotoGallery application is starting."
 echo "You can access it at: http://localhost:${WEB_PORT}"
 echo ""
-echo "To stop the application, run: docker-compose down"
-echo "To view logs, run: docker-compose logs -f"
+echo "To stop the application, run: sudo docker compose down"
+echo "To view logs, run: sudo docker compose logs -f"
 echo "--------------------------------------------------------------------"

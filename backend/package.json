@@ -1,0 +1,15 @@
+{
+  "name": "photogallery-backend",
+  "version": "1.0.0",
+  "description": "Backend for the PhotoGallery app",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "smb2": "0.2.11",
+    "sharp": "^0.33.1",
+    "path": "^0.12.7"
+  }
+}
