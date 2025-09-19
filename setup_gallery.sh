@@ -226,7 +226,7 @@ app.listen(port, async () => {
     try {
         const baseDir = process.env.SMB_DIRECTORY_PATH || '/';
         imageIndex = await findImages(baseDir);
-        console.log(\`Found \${imageIndex.length} images.`);
+        console.log(\`Found \${imageIndex.length} images.\`);
     } catch (err) {
         console.error("Failed to connect to SMB share or index images on startup.", err);
         // We will let the server run, it might recover or the user might fix config
